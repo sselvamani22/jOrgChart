@@ -120,6 +120,12 @@ Original Source code with an example is available [here](https://github.com/wesn
 
 -----
 
+##Demo Page
+
+Demo of the code is available here [here](http://sselvamani22.github.io/jOrgChart "DEMO").
+
+-----
+
 ##Configuration
 
 There are only 3 configuration options.
