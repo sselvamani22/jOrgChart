@@ -122,10 +122,13 @@ Demo of the code is available here [here](http://sselvamani22.github.io/jOrgChar
 
 ##Configuration
 
-There are only 4 configurations.
+Here the below configurations.
 
 1. **chartElement** - used to specify which HTML element you'd like to append the OrgChart markup to. *[default='body']*
 2. **depth** - tells the code what depth to parse to. The default value of "-1" instructs it to parse like it's 1999. *[default=-1]*
 3. **chartClass** - the name of the style class that is assigned to the generated markup. *[default='jOrgChart']*
 4. **dragAndDrop** - determines whether the drag-and-drop feature of tree node elements is enabled. *[default=false]*
+5. **expand** - To view the expand and collapse button on parent nodes. *[default=false]*
+6. **control** - Enable options to ADD, EDIT and DELETE the nodes. *[default=false]*
+7. **rowcolor** - Display the nodes on different color based upon rows. *[default=true]*
 
