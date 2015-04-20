@@ -52,8 +52,11 @@ overflow:auto;
   <script>
   function init_tree() {
     var opts = {
-      chartElement: '#chart',
-      dragAndDrop: true
+	  chartElement : '#chart',
+		dragAndDrop  : true,
+		expand       : true,
+		control		 : true,
+		rowcolor     : false
     };
     $("#chart").html("");
     $("#org").jOrgChart(opts);
@@ -134,9 +137,9 @@ overflow:auto;
     //start loop the json and form the html
     function loops(root) {
         if (root.parent == "") {
-          items.push("<li class='root unic" + root.id + " root' id='" + root.name + "'><span class='label_node'><a href=''>" + root.name + "</a></br><i>" + root.level + "</i></span><div class='details'><p><strong>rank:</strong>" + root.rank + "</p><p><strong>department:</strong>" + root.department + "</p></div>");
+          items.push("<li class='unic" + root.id + " root' id='" + root.name + "'><span class='label_node'><a href=''>" + root.name + "</a></br><i>" + root.level + "</i></span><div class='details'><p><strong>rank:</strong>" + root.rank + "</p><p><strong>department:</strong>" + root.department + "</p></div>");
         } else {
-          items.push("<li class='child unic" + root.id + " root' id='" + root.name + "'><span class='label_node'><a href=''>" + root.name + "</a></br><i>" + root.level + "</i></span><div class='details'><p><strong>rank:</strong>" + root.rank + "</p><p><strong>department:</strong>" + root.department + "</p></div>");
+          items.push("<li class='child unic" + root.id + "' id='" + root.name + "'><span class='label_node'><a href=''>" + root.name + "</a></br><i>" + root.level + "</i></span><div class='details'><p><strong>rank:</strong>" + root.rank + "</p><p><strong>department:</strong>" + root.department + "</p></div>");
         }
         var c = data({
           "parent": root.id

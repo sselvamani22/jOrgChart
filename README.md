@@ -74,12 +74,12 @@ You'll need to construct a nest unordered list that represents your node nesting
 If you want to add more node then you need to include this code in body
 	
 	
-	    <ul id="upload-chart">
-		    <li id="Albert" class="node child"><span class="label_node"><a href="#">Albert</a><br><i>Data Architect</i> </span><div class="details"><p><strong>rank:</strong>Vice President</p><p><strong>department:</strong>Research and Development</p></div></li>
-		    <li id="Moser" class="node child"><span class="label_node"><a href="#">Moser</a><br><i>technical engineer </i></span><div class="details"><p><strong>rank:</strong>Manager</p><p><strong>department:</strong>IT</p></div></li>
-		    <li id="Meinert" class="node child"><span class="label_node"><a href="#">Meinert</a><br><i>Maintenance Service Engineer</i></span><div class="details"><p><strong>rank:</strong>Vice President</p><p><strong>department:</strong>Research and Development</p></div></li>
-	        <li id="Mic" class="node child"><span class="label_node"><a href="#">Mic</a><br><i>Chairman of the Board, President</i></span><div class="details"><p><strong>rank:</strong>Manager</p><p><strong>department:</strong>IT</p></div></li>
-	    </ul>
+	<ul id="upload-chart">
+		<li id="Albert" class="node child"><span class="label_node"><a href="#">Albert</a><br><i>Data Architect</i> </span><div class="details"><p><strong>rank:</strong>Vice President</p><p><strong>department:</strong>Research and Development</p></div></li>
+		<li id="Moser" class="node child"><span class="label_node"><a href="#">Moser</a><br><i>technical engineer </i></span><div class="details"><p><strong>rank:</strong>Manager</p><p><strong>department:</strong>IT</p></div></li>
+		<li id="Meinert" class="node child"><span class="label_node"><a href="#">Meinert</a><br><i>Maintenance Service Engineer</i></span><div class="details"><p><strong>rank:</strong>Vice President</p><p><strong>department:</strong>Research and Development</p></div></li>
+		<li id="Mic" class="node child"><span class="label_node"><a href="#">Mic</a><br><i>Chairman of the Board, President</i></span><div class="details"><p><strong>rank:</strong>Manager</p><p><strong>department:</strong>IT</p></div></li>
+	</ul>
 	
 if you dont want to display drag extra node then you can handle this using either css or jquery
 	
@@ -92,13 +92,13 @@ This plugin works by generating the tree as a series of nested tables. Each node
 Add this function somewhere in your document:
 	
 	function init_tree(){
-            var opts = {
-                chartElement : '#chart', //your tree container
-                dragAndDrop  : true
-            };
-            $("#chart").html(""); //clean your container
-            $("#org").jOrgChart(opts); //creates the jOrgChart
-        }
+      var opts = {
+        chartElement : '#chart', //your tree container
+        dragAndDrop  : true
+      };
+      $("#chart").html(""); //clean your container
+      $("#org").jOrgChart(opts); //creates the jOrgChart
+    }
 
 And the cherry on the top is the usual call on document load of the function you just make. For example:
 
@@ -113,12 +113,6 @@ This call will append the markup for the OrgChart to the `<body>` element by def
 
 
 ------
-
-##Sourcecode
-
-Original Source code with an example is available [here](https://github.com/wesnolte/jOrgChart/tree/master/example "Example & Source").
-
------
 
 ##Demo Page
 

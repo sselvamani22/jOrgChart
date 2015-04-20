@@ -26,37 +26,41 @@
 
     var $container = $("<div class='" + opts.chartClass + "'/>");
     if ($this.is("ul")) {
-
-      //add color to row wise 
-      $this.find("li").each(function() {
-        classList = $(this).attr('class').split(/\s+/);
-        $.each(classList, function(index, item) {
-          if (item != "temp" && item != "node" && item != "child" && item != "ui-draggable" && item != "ui-droppable" && !/^unic\d+$/i.test(item)) {
-            re = item;
+      if (opts.rowcolor) {
+        //add color to row wise 
+        $this.find("li").each(function() {
+          classList = $(this).attr('class').split(/\s+/);
+          $.each(classList, function(index, item) {
+            if (item != "temp" && item != "node" && item != "child" && item != "ui-draggable" && item != "ui-droppable" && !/^unic\d+$/i.test(item)) {
+              re = item;
+            }
+          });
+          if (re != null) {
+            $(this).removeClass(re)
           }
+
+          var col = $(this).parents('li').length;
+
+          if (col == 0) {
+            $(this).addClass("nrow");
+          } else if (col == 1) {
+            $(this).addClass("firow");
+          } else if (col == 2) {
+            $(this).addClass("serow");
+          } else if (col == 3) {
+            $(this).addClass("throw");
+          } else if (col == 4) {
+            $(this).addClass("forow");
+          } else if (col == 5) {
+            $(this).addClass("firow");
+          } else if (col == 6) {
+            $(this).addClass("sirow");
+          } else {
+            $(this).addClass("norow");
+          }
+
         });
-        if (re != null) {
-          $(this).removeClass(re)
-        }
-        var col = $(this).parents('li').length;
-        if (col == 0) {
-          $(this).addClass("nrow");
-        } else if (col == 1) {
-          $(this).addClass("firow");
-        } else if (col == 2) {
-          $(this).addClass("serow");
-        } else if (col == 3) {
-          $(this).addClass("throw");
-        } else if (col == 4) {
-          $(this).addClass("forow");
-        } else if (col == 5) {
-          $(this).addClass("firow");
-        } else if (col == 6) {
-          $(this).addClass("sirow");
-        } else {
-          $(this).addClass("norow");
-        }
-      });
+      }
       $this.find("li.root").each(function() {
         buildNode($(this), $container, 0, opts);
       })
@@ -180,7 +184,10 @@
     chartElement: 'body',
     depth: -1,
     chartClass: "jOrgChart",
-    dragAndDrop: false
+    dragAndDrop: false,
+    expand: false,
+    control: false,
+    rowcolor: true
   };
 
   var nodeCount = 0;
@@ -249,23 +256,24 @@
 
 
     // Expand and contract nodes
-    if ($childNodes.length > 0) {
-      $nodeDiv.find(".opciones:eq(0)").closest(".node").append("<span class='exp-col'></span>");
-      $nodeDiv.find(".exp-col").click(function() {
-        var $this = $(this);
-        var $tr = $this.closest("tr");
-        if ($tr.hasClass('contracted')) {
-          $tr.removeClass('contracted').addClass('expanded');
-          $tr.nextAll("tr").css('visibility', '');
-          $node.removeClass('collapsed');
-        } else {
-          $tr.removeClass('expanded').addClass('contracted');
-          $tr.nextAll("tr").css('visibility', 'hidden');
-          $node.addClass('collapsed');
-        }
-      });
+    if (opts.expand) {
+      if ($childNodes.length > 0) {
+        $nodeDiv.find(".opciones:eq(0)").closest(".node").append("<span class='exp-col'></span>");
+        $nodeDiv.find(".exp-col").click(function() {
+          var $this = $(this);
+          var $tr = $this.closest("tr");
+          if ($tr.hasClass('contracted')) {
+            $tr.removeClass('contracted').addClass('expanded');
+            $tr.nextAll("tr").css('visibility', '');
+            $node.removeClass('collapsed');
+          } else {
+            $tr.removeClass('expanded').addClass('contracted');
+            $tr.nextAll("tr").css('visibility', 'hidden');
+            $node.addClass('collapsed');
+          }
+        });
+      }
     }
-
 
     $nodeCell.append($nodeDiv);
     $nodeRow.append($nodeCell);
@@ -331,16 +339,17 @@
         }
       });
     }
-    if (!$nodeDiv.hasClass("temp")) {
-      $nodeDiv.find(".opciones:eq(0)").append("<span class='edit' href='#fancy_edit'></span>");
-      $nodeDiv.find(".opciones:eq(0)").append("<span class='add' href='#fancy'></span>");
-      if ($nodeDiv.hasClass("child")) {
-        $nodeDiv.find(".opciones:eq(0)").append("<span class='del'></span>");
+    if (opts.control) {
+      if (!$nodeDiv.hasClass("temp")) {
+        $nodeDiv.find(".opciones:eq(0)").append("<span class='edit' href='#fancy_edit'></span>");
+        $nodeDiv.find(".opciones:eq(0)").append("<span class='add' href='#fancy'></span>");
+        if ($nodeDiv.hasClass("child")) {
+          $nodeDiv.find(".opciones:eq(0)").append("<span class='del'></span>");
+        }
+      } else {
+        $nodeDiv.find(".opciones:eq(0)").append("<span class='add' href='#fancy'></span><span class='del'></span>");
       }
-    } else {
-      $nodeDiv.find(".opciones:eq(0)").append("<span class='add' href='#fancy'></span><span class='del'></span>");
     }
-
     $table.append($tbody);
     $appendTo.append($table);
 
