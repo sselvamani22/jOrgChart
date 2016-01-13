@@ -46,8 +46,6 @@ You need to include the jQuery as well as the jOrgChart libraries. For example:
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
 	<script type="text/javascript" src="js/jquery.jOrgChart.js"></script>
 
-Download and add FancyBox2 http://fancyapps.com/fancybox/
-
 If you want to use the drag-and-drop functionality you'll need to include jQuery UI too:
 
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js"></script>

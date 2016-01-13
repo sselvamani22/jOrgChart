@@ -1,21 +1,8 @@
-/**
- * jQuery org-chart/tree plugin.
- *
- * Author: Héctor Vela
- * http://twitter.com/vellonce
- *
- * Original PlugIn Author: Wes Nolte
- * http://twitter.com/wesnolte
- *
- * Based on the work of Mark Lee
- * http://www.capricasoftware.co.uk
- *
- * Copyright (c) 2011 Wesley Nolte
- * Dual licensed under the MIT and GPL licenses.
- *
- */
+// jQuery Plugin
 (function($) {
+
   var cx = 0;
+  var loopflag = false;
   $.fn.jOrgChart = function(options) {
 
     var opts = $.extend({}, $.fn.jOrgChart.defaults, options);
@@ -133,7 +120,7 @@
         /* reload the plugin */
         $(opts.chartElement).children().remove();
         $this.jOrgChart(opts);
-        cutomdata();
+        cutomdata(opts.chartElement);
       });
 
 
@@ -177,6 +164,8 @@
       }); // handleDropEvent
 
     } // Drag and drop
+
+    cutomdata(opts.chartElement);
   };
 
   // Option defaults
@@ -342,12 +331,12 @@
     if (opts.control) {
       if (!$nodeDiv.hasClass("temp")) {
         $nodeDiv.find(".opciones:eq(0)").append("<span class='edit' href='#fancy_edit'></span>");
-        $nodeDiv.find(".opciones:eq(0)").append("<span class='add' href='#fancy'></span>");
+        $nodeDiv.find(".opciones:eq(0)").append("<span class='add' href='#fancy_add'></span>");
         if ($nodeDiv.hasClass("child")) {
           $nodeDiv.find(".opciones:eq(0)").append("<span class='del'></span>");
         }
       } else {
-        $nodeDiv.find(".opciones:eq(0)").append("<span class='add' href='#fancy'></span><span class='del'></span>");
+        $nodeDiv.find(".opciones:eq(0)").append("<span class='add' href='#fancy_add'></span><span class='del'></span>");
       }
     }
     $table.append($tbody);
@@ -358,5 +347,133 @@
       e.stopPropagation();
     });
   }
+
+  function cutomdata(selector) {
+    if (loopflag) {
+      return;
+    }
+    loopActive = true;
+    var regx = /\w*(row)/;
+
+    $(selector).on("click", ".del", function(e) {
+      var nodo = $(this);
+
+      if (!nodo.parent().parent().hasClass("temp")) {
+        var nodeDiv = nodo.parent().parent();
+        var cu = nodeDiv.find("a").attr("rel");
+        var classList = nodeDiv.attr('class').split(/\s+/);
+        var del_node;
+        $.each(classList, function(index, item) {
+          if (item != "temp" && item != "node" && item != "child" && item != "ui-draggable" && item != "ui-droppable" && !regx.test(item)) {
+            del_node = item;
+          }
+        });
+        var element = $("li." + del_node + ":not('.temp, #upload-chart li')").removeAttr("class").addClass("node").addClass("child");
+        remChild(element);
+        init_tree();
+      }
+    });
+
+    //-- Node editor
+    $(selector).on("click", ".edit", function(e) {
+      $("#fancy_edit").show();
+      var classList = $(this).parent().parent().attr('class').split(/\s+/);
+      var tipo_n;
+      var del_node
+      $.each(classList, function(index, item) {
+        if (item != "temp" && item != "node" && item != "child" && item != "ui-draggable" && item != "ui-droppable" && !regx.test(item)) {
+          del_node = item;
+        }
+        if (item == "root" || item == "child") {
+          tipo_n = item;
+        }
+      });
+      node_to_edit = $("li." + del_node + ":not('.temp')");
+      $("#edit_node").off("click").on("click", function(e) {
+        e.preventDefault();
+        //modify li and refresh tree
+        var edit_field = $("#edit_node_name");
+        var edit_title = $("#edit_node_title");
+        var texto = edit_field.val();
+        var texti = edit_title.val();
+        node_to_edit.find("> .label_node:eq(0) > a").text(texto);
+        node_to_edit.find("> .label_node:eq(0) > i").text(texti);
+        edit_field.val("");
+        edit_title.val("");
+        hideBox();
+        init_tree();
+      });
+      $("#fancy_edit").show();
+    });
+
+
+    //Add Node
+
+    $(selector).on("click", ".add", function() {
+      $("#fancy_add i").show();
+      var classList = $(this).parent().parent().attr('class').split(/\s+/);
+      var add_to_node;
+      $.each(classList, function(index, item) {
+        if (item != "temp" && item != "node" && item != "child" && item != "ui-draggable" && item != "ui-droppable" && !regx.test(item)) {
+          add_to_node = item;
+          return;
+        }
+      });
+      $("#add_node").off("click").on("click", function(e) {
+        e.preventDefault();
+
+        var tipo_nodo = "";
+        var text_field = $("#new_node_name");
+        var text_description = $("#new_node_title");
+        var texto = text_field.val();
+        var texti = text_description.val();
+        text_field.val("");
+        text_description.val("");
+        var $node = $("li." + add_to_node + ":not('.temp')");
+        var childs = $("#org li").size() + $("#upload-chart li").size() + 1;
+        tipo_nodo += "child unic" + childs;
+        var append_text = "<li class='" + tipo_nodo + "'>";
+        append_text += "<span class='label_node'><a href='#'>" + texto + "</a><br>" + texti + "</span>";
+        append_text += "</li>";
+        if ($node.find("ul").size() == 0) {
+          append_text = "<ul>" + append_text + "</ul>";
+          $node.append(append_text);
+        } else {
+          $node.find("ul:eq(0)").append(append_text);
+        }
+
+        hideBox();
+        init_tree();
+        scroll()
+      });
+      $("#fancy_add").show();
+    });
+
+
+    function hideBox() {
+      $("#fancy_edit, #fancy_add").hide();
+    }
+
+    $("#fancy_edit i,#fancy_add i").click(function() {
+      hideBox();
+    })
+
+  }
+
+  function remChild(removing) {
+
+    $("#upload-chart").append(removing);
+    $("#upload-chart ul li").each(function() {
+      var Orgli = $(this).removeAttr("class").addClass("node").addClass("child").clone();
+      $(this).remove();
+      $("#upload-chart").append(Orgli);
+    });
+    $("#upload-chart ul").remove();
+    var sideLi = $("#upload-chart").html();
+    $("#upload-chart").empty();
+    $("#upload-chart").append(sideLi);
+  }
+
+
 
 })(jQuery);
