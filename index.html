@@ -7,13 +7,10 @@
   <link rel="stylesheet" href="css/bootstrap.min.css" />
   <link rel="stylesheet" href="css/jquery.jOrgChart.css" />
   <link rel="stylesheet" href="css/custom.css" />
-  <link href="css/prettify.css" type="text/css" rel="stylesheet" />
-  <link rel="stylesheet" href="fancybox/jquery.fancybox.css" type="text/css" />
+
   <!-- jQuery includes -->
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
-  <script type="text/javascript" src="js/prettify.js"></script>
-  <script type="text/javascript" src="fancybox/jquery.fancybox.js"></script>
   <script src="js/jquery.jOrgChart.js"></script>
   <script type="text/javascript" src="js/taffy.js"></script>
   <style type="text/css">
@@ -24,15 +21,6 @@
     margin-left: 20px;
     margin-top: 20px;
   }
-  /*
-#chart{
-    height: 300px;
-    overflow: scroll;
-    width: 500px;
-    resize:both;
-overflow:auto;
-}
-*/
   
   ul#upload-chart {
     float: right;
@@ -47,32 +35,45 @@ overflow:auto;
     margin-top: 2px;
     padding-top: 5px;
     width: 200px;
+    z-index: 100;
+  }
+  
+  #fancy_edit,
+  #fancy_add {
+    position: fixed;
+    top: 100px;
+    width: 500px;
+    background: #fff;
+    right: 0;
+    left: 0;
+    margin: auto;
+    padding: 20px;
+    border: 3px solid red;
+    border-radius: 5px;
+    z-index: 99999;
+  }
+  
+  #fancy_edit i,
+  #fancy_add i {
+    position: absolute;
+    top: 0;
+    width: 15px;
+    height: 15px;
+    right: 0;
+    color: #000;
+    background: gray;
+    opacity: 1;
+    font-size: 15px;
+    cursor: pointer;
+    padding: 5px;
   }
   </style>
   <script>
-  function init_tree() {
-    var opts = {
-	  chartElement : '#chart',
-		dragAndDrop  : true,
-		expand       : true,
-		control		 : true,
-		rowcolor     : false
-    };
-    $("#chart").html("");
-    $("#org").jOrgChart(opts);
-    cutomdata();
-  }
-
-  function scroll() {
-    $(".node").click(function() {
-      $("#chart").scrollTop(0)
-      $("#chart").scrollTop($(this).offset().top - 140);
-    })
-  }
-
-  var click_flag = true;
   var node_to_edit;
+
   // read json and convert to html formate
+  // Here I am laod the json format to html structure. You no need to do this incase you have order list HTML in you body
+  //Start Load HTML
   function loadjson() {
     var items = [];
     var data = TAFFY([
@@ -136,26 +137,26 @@ overflow:auto;
     });
     //start loop the json and form the html
     function loops(root) {
-        if (root.parent == "") {
-          items.push("<li class='unic" + root.id + " root' id='" + root.name + "'><span class='label_node'><a href=''>" + root.name + "</a></br><i>" + root.level + "</i></span><div class='details'><p><strong>rank:</strong>" + root.rank + "</p><p><strong>department:</strong>" + root.department + "</p></div>");
-        } else {
-          items.push("<li class='child unic" + root.id + "' id='" + root.name + "'><span class='label_node'><a href=''>" + root.name + "</a></br><i>" + root.level + "</i></span><div class='details'><p><strong>rank:</strong>" + root.rank + "</p><p><strong>department:</strong>" + root.department + "</p></div>");
-        }
-        var c = data({
+      if (root.parent == "") {
+        items.push("<li class='unic" + root.id + " root' id='" + root.name + "'><span class='label_node'><a href=''>" + root.name + "</a></br><i>" + root.level + "</i></span><div class='details'><p><strong>rank:</strong>" + root.rank + "</p><p><strong>department:</strong>" + root.department + "</p></div>");
+      } else {
+        items.push("<li class='child unic" + root.id + "' id='" + root.name + "'><span class='label_node'><a href=''>" + root.name + "</a></br><i>" + root.level + "</i></span><div class='details'><p><strong>rank:</strong>" + root.rank + "</p><p><strong>department:</strong>" + root.department + "</p></div>");
+      }
+      var c = data({
+        "parent": root.id
+      }).count();
+      if (c != 0) {
+        items.push("<ul>");
+        data({
           "parent": root.id
-        }).count();
-        if (c != 0) {
-          items.push("<ul>");
-          data({
-            "parent": root.id
-          }).each(function(record, recordnumber) {
-            loops(record);
-          });
-          items.push("</ul></li>");
-        } else {
-          items.push("</li>");
-        }
-      } // End the generate html code
+        }).each(function(record, recordnumber) {
+          loops(record);
+        });
+        items.push("</ul></li>");
+      } else {
+        items.push("</li>");
+      }
+    } // End the generate html code
 
     //push to html code
     $("<ul/>", {
@@ -164,10 +165,11 @@ overflow:auto;
       html: items.join("")
     }).appendTo("body");
   }
+  // End Load HTML
   </script>
 </head>
 
-<body onload="prettyPrint();">
+<body>
   <div class="topbar">
     <div class="topbar-inner">
       <div class="container">
@@ -187,6 +189,10 @@ overflow:auto;
   <button id="getjson" onclick="makeArrays()">Generate json</button>
   <div id="in" style="display:none">
   </div>
+
+
+  <!-- Here below code for Right side box model. Please dont change ID -->
+
   <ul id="upload-chart">
     <li id="Albert" class="node child"><span class="label_node"><a href="http://github.com/sselvamani22">Albert</a><br><i>Data Architect</i> </span>
       <div class="details">
@@ -214,51 +220,69 @@ overflow:auto;
     </li>
   </ul>
   <div id="chart" class="orgChart"></div>
+
+  <!-- Make sure You add this below code to you HTML in case you want edit and add box -->
   <!-- Add Node box -->
-  <div id="fancy" class="hidden">
-    <form action="." method="post" id="add_node_form">
+  <div id="fancy_add" class="hidden">
+    <form>
       <h1 class="title_lb">New Node</h1>
       <div class="span12" id="add_nodo">
         <p class="notice span3">
           Enter node caption
         </p>
-        <input type="text" name="node_name" id="new_node_name" class="span6" />
-        <input type="text" name="title_name" id="new_node_title" class="span6" />
+        <input type="text" name="node_name" id="new_node_name" />
+        <input type="text" name="title_name" id="new_node_title" />
         <div class="span12">
           <button id="add_node" class="aqua_btn span3">Add</button>
         </div>
       </div>
     </form>
+    <i class="close">X</i>
   </div>
   <!-- Edit node box -->
   <div id="fancy_edit" class="hidden">
-    <form action="." method="post" id="edit_node_form">
+    <form>
       <h1 class="title_lb">Edit Node</h1>
       <div class="span12" id="edit_nodo">
         <p class="notice span3">
           Enter node caption
         </p>
-        <input type="text" name="node_name" id="edit_node_name" class="span6" />
-        <input type="text" name="node_title" id="edit_node_title" class="span6" />
+        <input type="text" name="node_name" id="edit_node_name" />
+        <input type="text" name="node_title" id="edit_node_title" />
         <div class="span12">
           <button id="edit_node" class="aqua_btn span3">Edit</button>
         </div>
       </div>
     </form>
+    <i class="close">X</i>
   </div>
+
+
+
   <script type="text/javascript">
-  function remChild(removing) {
-    $("#upload-chart").append(removing);
-    $("#upload-chart ul li").each(function() {
-      var Orgli = $(this).removeAttr("class").addClass("node").addClass("child").clone();
-      $(this).remove();
-      $("#upload-chart").append(Orgli);
-    });
-    $("#upload-chart ul").remove();
-    var sideLi = $("#upload-chart").html();
-    $("#upload-chart").empty();
-    $("#upload-chart").append(sideLi);
+
+
+
+  function init_tree() {
+    var opts = {
+      chartElement: '#chart',
+      dragAndDrop: true,
+      expand: true,
+      control: true,
+      rowcolor: false
+    };
+    $("#chart").html("");
+    $("#org").jOrgChart(opts);
   }
+
+  function scroll() {
+    $(".node").click(function() {
+      $("#chart").scrollTop(0)
+      $("#chart").scrollTop($(this).offset().top - 140);
+    })
+  }
+
+  
 
   function makeArrays() {
     var hierarchy = [];
@@ -293,151 +317,9 @@ overflow:auto;
     alert("Check console")
   }
 
-  function cutomdata() {
-    var add_to_node = "",
-      del_node = "",
-      classList = "";
-    var regx = /\w*(row)/;
-
-    $(".edit").off("click").on("click", function(e) {
-      classList = $(this).parent().parent().attr('class').split(/\s+/);
-      var tipo_n;
-      $.each(classList, function(index, item) {
-        if (item != "temp" && item != "node" && item != "child" && item != "ui-draggable" && item != "ui-droppable" && !regx.test(item)) {
-          del_node = item;
-        }
-        if (item == "root" || item == "child") {
-          tipo_n = item;
-        }
-      });
-      node_to_edit = $("li." + del_node + ":not('.temp')");
-      $("#edit_node").off("click").on("click", function(e) {
-        e.preventDefault();
-        //modify li and refresh tree
-        var edit_field = $("#edit_node_name");
-        var edit_title = $("#edit_node_title");
-        var texto = edit_field.val();
-        var texti = edit_title.val();
-        node_to_edit.find("> .label_node:eq(0) > a").text(texto);
-        node_to_edit.find("> .label_node:eq(0) > i").text(texti);
-        edit_field.val("");
-        edit_title.val("");
-        $.fancybox.close();
-        init_tree();
-
-      });
-    }).fancybox({
-      maxWidth: 800,
-      maxHeight: 800,
-      fitToView: false,
-      width: '70%',
-      height: '70%',
-      autoSize: false,
-      closeClick: false,
-      openEffect: 'none',
-      closeEffect: 'none'
-    });
-
-
-    //-- Listo editar :D
-
-    $(".del").off("click").on("click", function(e) {
-      var nodo = $(this);
-
-      if (!nodo.parent().parent().hasClass("temp")) {
-        var nodeDiv = nodo.parent().parent();
-        var cu = nodeDiv.find("a").attr("rel");
-        classList = nodeDiv.attr('class').split(/\s+/);
-        $.each(classList, function(index, item) {
-          if (item != "temp" && item != "node" && item != "child" && item != "ui-draggable" && item != "ui-droppable" && !regx.test(item)) {
-            del_node = item;
-          }
-        });
-        var element = $("li." + del_node + ":not('.temp, #upload-chart li')").removeAttr("class").addClass("node").addClass("child");
-        remChild(element);
-        init_tree();
-      }
-    });
-
-    $(".add").off("click").on("click", function() {
-      click_flag = false;
-
-      classList = $(this).parent().parent().attr('class').split(/\s+/);
-      $.each(classList, function(index, item) {
-        if (item != "temp" && item != "node" && item != "child" && item != "ui-draggable" && item != "ui-droppable" && !regx.test(item)) {
-          add_to_node = item;
-        }
-      });
-      $("#add_node").off("click").on("click", function(e) {
-        e.preventDefault();
-
-        //unidad de consumo agregada, agregar li a la lista, y refrescar arbol
-
-        var tipo_nodo = "";
-        var text_field = $("#new_node_name");
-        var text_description = $("#new_node_title");
-        var texto = text_field.val();
-        var texti = text_description.val();
-        text_field.val("");
-        text_description.val("");
-        var $node = $("li." + add_to_node + ":not('.temp')");
-        var childs = $("#org li").size() + $("#upload-chart li").size() + 1;
-        tipo_nodo += "child unic" + childs;
-        var append_text = "<li class='" + tipo_nodo + "'>";
-        append_text += "<span class='label_node'><a href='#'>" + texto + "</a><br>" + texti + "</span>";
-        append_text += "</li>";
-        if ($node.find("ul").size() == 0) {
-          append_text = "<ul>" + append_text + "</ul>";
-          $node.append(append_text);
-        } else {
-          $node.find("ul:eq(0)").append(append_text);
-        }
-
-        $.fancybox.close();
-        init_tree();
-        scroll()
-      });
-
-    }).fancybox({
-      maxWidth: 800,
-      maxHeight: 800,
-      fitToView: false,
-      width: '70%',
-      height: '70%',
-      autoSize: false,
-      closeClick: false,
-      openEffect: 'none',
-      closeEffect: 'none',
-      afterClose: function() {
-        click_flag = true;
-        init_tree()
-      }
-    });
-  }
 
 
   $(document).ready(function() {
-    /* Custom jQuery for the example */
-    $("#show-list").click(function(e) {
-      e.preventDefault();
-
-      $('#list-html').toggle('fast', function() {
-        $('#list-html').text($('#org').html());
-        $("#org").bind("DOMSubtreeModified", function() {
-          $('#list-html').text('');
-          $('#list-html').text($('#org').html());
-          prettyPrint();
-        });
-        if ($(this).is(':visible')) {
-          $('#show-list').text('Hide underlying list.');
-          $(".topbar").fadeTo('fast', 0.9);
-        } else {
-          $('#show-list').text('Show underlying list.');
-          $(".topbar").fadeTo('fast', 1);
-        }
-      });
-    });
-
 
 
     loadjson();
@@ -460,6 +342,8 @@ overflow:auto;
         }
       }
     });
+
+    
     scroll()
 
   });
