@@ -160,6 +160,14 @@
           targetLi.append("<ul></ul>");
           targetLi.children('ul').append(sourceLi);
         }
+        
+        // Check if the dragAndDrop option is a callback
+        if (typeof opts.dragAndDrop == 'function') {
+            // Need the original li id's
+            var source = $(sourceLi).attr('id');
+            var target = $(targetLi).attr('id');
+            opts.dragAndDrop.call(this,source,target);
+        }
 
       }); // handleDropEvent
 
