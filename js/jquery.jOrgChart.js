@@ -332,13 +332,13 @@
         }
         if (opts.control) {
             if (!$nodeDiv.hasClass("temp")) {
-                $nodeDiv.find(".opciones:eq(0)").append("<span class='edit' href='#fancy_edit'></span>");
-                $nodeDiv.find(".opciones:eq(0)").append("<span class='add' href='#fancy_add'></span>");
+                $nodeDiv.find(".opciones:eq(0)").append("<span class='edit'></span>");
+                $nodeDiv.find(".opciones:eq(0)").append("<span class='add'></span>");
                 if ($nodeDiv.hasClass("child")) {
                     $nodeDiv.find(".opciones:eq(0)").append("<span class='del'></span>");
                 }
             } else {
-                $nodeDiv.find(".opciones:eq(0)").append("<span class='add' href='#fancy_add'></span><span class='del'></span>");
+                $nodeDiv.find(".opciones:eq(0)").append("<span class='add'></span><span class='del'></span>");
             }
         }
         $table.append($tbody);
@@ -358,7 +358,7 @@
         var regx = /\w*(row)/;
 
          //-- Delete node
-        $(jOrgChart_user_config_options.chartElement).off("click").on("click", ".del", function(e) {
+        $(jOrgChart_user_config_options.chartElement).find(".del").off("click").on("click", function(e) {
             var nodo = $(this);
 
             if (!nodo.parent().parent().hasClass("temp")) {
@@ -378,7 +378,7 @@
         });
 
         //-- Node editor
-        $(jOrgChart_user_config_options.chartElement).off("click").on("click", ".edit", function(e) {
+        $(jOrgChart_user_config_options.chartElement).find(".edit").off("click").on("click", function(e) {
             $("#fancy_edit").show();
             var classList = $(this).parent().parent().attr('class').split(/\s+/);
             var tipo_n;
@@ -412,7 +412,7 @@
 
         //Add Node
 
-        $(jOrgChart_user_config_options.chartElement).off("click").on("click", ".add", function() {
+        $(jOrgChart_user_config_options.chartElement).find(".add").off("click").on("click", function() {
             $("#fancy_add i").show();
             var classList = $(this).parent().parent().attr('class').split(/\s+/);
             var add_to_node;
