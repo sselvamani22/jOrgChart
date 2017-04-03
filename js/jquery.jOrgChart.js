@@ -367,7 +367,7 @@
                 var classList = nodeDiv.attr('class').split(/\s+/);
                 var del_node;
                 $.each(classList, function(index, item) {
-                    if (item != "temp" && item != "node" && item != "child" && item != "ui-draggable" && item != "ui-droppable" && !regx.test(item)) {
+                    if (item != "item" && item != "temp" && item != "node" && item != "child" && item != "ui-draggable" && item != "ui-droppable" && !regx.test(item)) {
                         del_node = item;
                     }
                 });
